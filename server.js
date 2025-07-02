@@ -4,6 +4,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require("path");
+const cookieParser = require("cookie-parser");
 
 const authRoutes = require("./routes/auth");
 const feedbackRoutes = require("./routes/feedback");
@@ -41,6 +42,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.options("*", cors(corsOptions)); // ✅ Important: handles OPTIONS preflight
+app.use(cookieParser());
 
 // Serve static files (HTML, CSS, JS) from the public folder
 app.use(express.static(path.join(__dirname, "public")));
