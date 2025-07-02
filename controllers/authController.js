@@ -99,6 +99,15 @@ exports.login = async (req, res) => {
       { expiresIn: "1d" }
     );
 
+     // ✅✅✅ SET COOKIE HERE
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None", // Required for cross-origin (Vercel ↔ Render)
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
+    });
+
+
     return res.status(200).json({
       message: "Login successful.",
       token,
