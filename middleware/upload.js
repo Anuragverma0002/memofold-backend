@@ -10,6 +10,7 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname);
+    const safeUsername = req.user.username.replace(/[^a-z0-9]/gi, "_").toLowerCase();
     cb(null, `${req.user.username}_profile${ext}`);
   },
 });
