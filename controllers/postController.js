@@ -44,10 +44,19 @@ exports.getPosts = async (req, res) => {
       userMap[user.username] = user.profilePic || "";
     });
 
-    const enrichedPosts = posts.map(post => ({
-      ...post,
-      profilePic: userMap[post.username] || "",
-    }));
+   const BASE_BACKEND = "https://memofold-backend.onrender.com"; // ✅ Update this if you change deployment
+
+    const enrichedPosts = posts.map(post => {
+      const rawPic = userMap[post.username] || "";
+      const fullPic = rawPic.startsWith("/uploads")
+        ? `${BASE_BACKEND}${rawPic}`
+        : rawPic;
+
+      return {
+        ...post,
+        profilePic: fullPic,
+      };
+    });
 
     res.status(200).json(enrichedPosts);
   } catch (err) {
@@ -55,12 +64,14 @@ exports.getPosts = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch posts" });
   }
 };
-
 exports.getMyPosts = async (req, res) => {
   try {
-    const posts = await Post.find({ userId: req.user.id }).sort({ createdAt: -1 });
+    const posts = await Post.find({ userId: req.user.id })
+      .sort({ createdAt: -1 })
+      .lean(); // 👍 Faster, returns plain JS objects
     res.status(200).json(posts);
   } catch (err) {
     res.status(500).json({ error: "Server error" });
   }
 };
+
